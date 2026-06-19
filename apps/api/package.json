@@ -1,0 +1,29 @@
+{
+  "name": "@dataloop/api",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npm --prefix ../../packages/shared run build && npm --prefix ../../packages/storage run db:generate && npm --prefix ../../packages/storage run build && tsc -p tsconfig.json && node scripts/write-start-shim.cjs",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "seed:week1": "tsx scripts/seed-week1.ts",
+    "test": "node --import tsx --test test/**/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@dataloop/shared": "0.1.0",
+    "@dataloop/storage": "0.1.0",
+    "@fastify/cors": "^10.0.1",
+    "@mysten/sui": "^2.19.0",
+    "@mysten/walrus": "^1.2.1",
+    "dotenv": "^16.4.7",
+    "ethers": "6.13.1",
+    "fastify": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

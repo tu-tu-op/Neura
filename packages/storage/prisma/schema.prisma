@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DatasetEntrySourceType {
+  TASK
+  CORRECTION
+}
+
+model PlatformConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TaskRecord {
+  id              String             @id @default(cuid())
+  taskId          String             @unique
+  creatorAddress  String
+  createdAt       DateTime
+  metadataUri     String?
+  metadataHash    String?
+  chainId         Int?
+  contractAddress String?
+  transactionHash String?
+  blockNumber     BigInt?
+  logIndex        Int?
+  corrections     CorrectionRecord[]
+  datasetEntries  DatasetEntry[]
+  insertedAt      DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([creatorAddress, createdAt])
+}
+
+model CorrectionRecord {
+  id                String            @id @default(cuid())
+  correctionId      String            @unique
+  taskRecordId      String
+  taskRecord        TaskRecord        @relation(fields: [taskRecordId], references: [id], onDelete: Restrict)
+  submitterAddress  String
+  submittedAt       DateTime
+  metadataUri       String?
+  metadataHash      String?
+  chainId           Int?
+  contractAddress   String?
+  transactionHash   String?
+  blockNumber       BigInt?
+  logIndex          Int?
+  datasetEntries    DatasetEntry[]
+  insertedAt        DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([taskRecordId, submittedAt, correctionId])
+}
+
+model Dataset {
+  id                  String           @id @default(cuid())
+  datasetId           String           @unique
+  createdBy           String
+  createdAt           DateTime
+  metadataUri         String?
+  metadataHash        String?
+  latestVersionNumber Int              @default(0)
+  versions            DatasetVersion[]
+  insertedAt          DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  @@index([createdBy, createdAt])
+}
+
+model DatasetVersion {
+  id              String         @id @default(cuid())
+  datasetRefId    String
+  dataset         Dataset        @relation(fields: [datasetRefId], references: [id], onDelete: Restrict)
+  versionNumber   Int
+  registeredBy    String
+  registeredAt    DateTime
+  metadataUri     String?
+  metadataHash    String?
+  immutableRef    String
+  chainId         Int?
+  contractAddress String?
+  transactionHash String?
+  blockNumber     BigInt?
+  logIndex        Int?
+  entries         DatasetEntry[]
+  insertedAt      DateTime       @default(now())
+
+  @@unique([datasetRefId, versionNumber])
+  @@index([datasetRefId, versionNumber])
+}
+
+model DatasetEntry {
+  id                 String                 @id @default(cuid())
+  datasetVersionId   String
+  datasetVersion     DatasetVersion         @relation(fields: [datasetVersionId], references: [id], onDelete: Restrict)
+  sourceType         DatasetEntrySourceType
+  position           Int
+  taskRecordId       String?
+  taskRecord         TaskRecord?            @relation(fields: [taskRecordId], references: [id], onDelete: Restrict)
+  correctionRecordId String?
+  correctionRecord   CorrectionRecord?      @relation(fields: [correctionRecordId], references: [id], onDelete: Restrict)
+  metadataUri        String?
+  metadataHash       String?
+  insertedAt         DateTime               @default(now())
+
+  @@unique([datasetVersionId, position])
+  @@index([taskRecordId])
+  @@index([correctionRecordId])
+}

@@ -1,0 +1,86 @@
+[
+  {
+    "id": "network-wrong-chain",
+    "title": "Wallet connected to the wrong Sui network",
+    "userPrompt": "My Sui wallet is connected but the dapp keeps rejecting me. The wallet is using a different Sui network than the app and I cannot create a task.",
+    "expected": {
+      "category": "NETWORK_CONFIGURATION",
+      "severity": "low",
+      "requiresHuman": false,
+      "summary": "The user wallet is connected to the wrong blockchain network for the dapp.",
+      "suggestedResolution": "Ask the user to switch the wallet to the configured Sui network and retry the action.",
+      "confidence": 0.93
+    },
+    "mockResponse": "{\"category\":\"NETWORK_CONFIGURATION\",\"severity\":\"low\",\"requiresHuman\":false,\"summary\":\"The wallet is on the wrong Sui network.\",\"suggestedResolution\":\"Switch the wallet to the required Sui network and try again.\",\"confidence\":0.91}"
+  },
+  {
+    "id": "insufficient-gas",
+    "title": "Not enough balance to submit a transaction",
+    "userPrompt": "Every correction submission fails before confirmation. The wallet shows almost zero SUI and the transaction never gets sent.",
+    "expected": {
+      "category": "INSUFFICIENT_FUNDS",
+      "severity": "medium",
+      "requiresHuman": false,
+      "summary": "The user lacks enough SUI to pay gas and submit the transaction.",
+      "suggestedResolution": "Tell the user to fund the wallet with enough SUI for gas, then retry the correction submission.",
+      "confidence": 0.9
+    },
+    "mockResponse": "{\"category\":\"TRANSACTION_STUCK\",\"severity\":\"medium\",\"requiresHuman\":false,\"summary\":\"The transaction is taking too long to finish.\",\"suggestedResolution\":\"Wait for more confirmations before retrying.\",\"confidence\":0.88}"
+  },
+  {
+    "id": "pending-transaction",
+    "title": "Transaction stays pending for hours",
+    "userPrompt": "I created a task but the transaction result has not appeared for two hours. The wallet returned a digest, but the task still does not show up on Sui.",
+    "expected": {
+      "category": "TRANSACTION_STUCK",
+      "severity": "medium",
+      "requiresHuman": false,
+      "summary": "The transaction digest exists, but the app has not observed the expected Sui effects or object changes.",
+      "suggestedResolution": "Recommend checking the digest in a Sui explorer, confirming the selected network, and retrying only after verifying the original transaction status.",
+      "confidence": 0.87
+    },
+    "mockResponse": "{\"category\":\"TRANSACTION_STUCK\",\"severity\":\"medium\",\"requiresHuman\":false,\"summary\":\"The app has not observed the transaction result yet.\",\"suggestedResolution\":\"Check the transaction digest and selected Sui network before retrying.\",\"confidence\":0.41}"
+  },
+  {
+    "id": "malicious-approval",
+    "title": "Suspicious transaction request",
+    "userPrompt": "A user connected a Sui wallet to claim an airdrop and the site asked them to sign a transaction that transfers unfamiliar coins and objects. They want to know if it is safe.",
+    "expected": {
+      "category": "SCAM_RISK",
+      "severity": "critical",
+      "requiresHuman": true,
+      "summary": "The user is facing a likely phishing or malicious Sui transaction request.",
+      "suggestedResolution": "Tell the user not to sign, disconnect from the site, review the transaction commands and wallet activity, and escalate for immediate human review.",
+      "confidence": 0.96
+    },
+    "mockResponse": "This looks dangerous. Category=scam risk. Ask a human to review it immediately."
+  },
+  {
+    "id": "wallet-extension",
+    "title": "Browser wallet extension not detected",
+    "userPrompt": "The app says no wallet is installed, but the user thought they had a Sui-compatible wallet extension already. They cannot connect at all.",
+    "expected": {
+      "category": "WALLET_CONNECTION",
+      "severity": "low",
+      "requiresHuman": false,
+      "summary": "The browser does not expose a usable wallet provider to the dapp.",
+      "suggestedResolution": "Ask the user to install or re-enable the wallet extension and refresh the browser before reconnecting.",
+      "confidence": 0.89
+    },
+    "mockResponse": "{\"category\":\"WALLET_CONNECTION\",\"severity\":\"low\",\"requiresHuman\":false,\"summary\":\"The dapp cannot detect a wallet provider in the browser.\",\"suggestedResolution\":\"Install or re-enable the wallet extension and refresh the page.\",\"confidence\":0.84}"
+  },
+  {
+    "id": "contract-revert",
+    "title": "Move call aborts with an error",
+    "userPrompt": "A correction submission reaches the Sui Move package, but transaction simulation aborts with an error. The user needs next steps.",
+    "expected": {
+      "category": "CONTRACT_ERROR",
+      "severity": "high",
+      "requiresHuman": true,
+      "summary": "The on-chain action is aborting because of a Move validation or object-state error.",
+      "suggestedResolution": "Capture the Move abort details, inspect the input objects and transaction payload, and escalate to a developer or operator for investigation.",
+      "confidence": 0.91
+    },
+    "mockResponse": "{\"category\":\"CONTRACT_ERROR\",\"severity\":\"medium\",\"requiresHuman\":true,\"summary\":\"The Move call aborted during execution.\",\"suggestedResolution\":\"Check the abort details and inspect the input objects before retrying.\",\"confidence\":0.79}"
+  }
+]

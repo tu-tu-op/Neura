@@ -1,0 +1,347 @@
+[
+  {
+    "id": "xlookup-basics",
+    "title": "Basic XLOOKUP lookup",
+    "userPrompt": "Given a table with employee names in column A and salaries in column B, what formula in cell D1 looks up the salary for 'John Doe' from A1:B10?",
+    "expectedAnswer": "Use XLOOKUP to find the salary for the exact match.",
+    "expectedFormula": "=XLOOKUP(\"John Doe\", A1:A10, B1:B10)",
+    "acceptableAlternatives": [
+      "=XLOOKUP(\"John Doe\",$A$1:$A$10,$B$1:$B$10)"
+    ],
+    "requiredConcepts": [
+      "XLOOKUP",
+      "exact match"
+    ],
+    "difficulty": "easy",
+    "tags": [
+      "lookup"
+    ],
+    "mockResponse": "{\"formula\":\"=XLOOKUP(\\\"John Doe\\\",A1:A10,B1:B10)\",\"explanation\":\"XLOOKUP finds exact match salary for John Doe.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "sumifs-multi-condition",
+    "title": "SUMIFS with multiple criteria",
+    "userPrompt": "In a sales table with dates in A, regions in B, amounts in C, what formula sums sales in 'North' region after 2024-01-01?",
+    "expectedAnswer": "Use SUMIFS with date criteria for multi-condition aggregation.",
+    "expectedFormula": "=SUMIFS(C:C, B:B, \"North\", A:A, \">2024-01-01\")",
+    "acceptableAlternatives": [
+      "=SUMIFS(C:C,A:A,\">1/1/2024\",B:B,\"North\")"
+    ],
+    "requiredConcepts": [
+      "SUMIFS",
+      "date criteria"
+    ],
+    "difficulty": "medium",
+    "tags": [
+      "aggregation"
+    ],
+    "mockResponse": "{\"formula\":\"=SUMIFS(C:C,B:B,\\\"North\\\",A:A,\\\">2024-01-01\\\")\",\"explanation\":\"Sums North region sales after Jan 1, 2024 using date criteria.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "index-match-2d",
+    "title": "INDEX MATCH for 2D lookup",
+    "userPrompt": "In a grid A1:D10 with months across top, products down side, sales in middle, lookup Q1 sales for 'Widget' row and 'Jan' column.",
+    "expectedAnswer": "Use INDEX MATCH for a 2D lookup by matching both row and column.",
+    "expectedFormula": "=INDEX(B2:D10, MATCH(\"Widget\",A2:A10,0), MATCH(\"Jan\",B1:D1,0))",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "INDEX MATCH",
+      "2D lookup"
+    ],
+    "difficulty": "medium",
+    "tags": [
+      "lookup"
+    ],
+    "mockResponse": "{\"formula\":\"=INDEX(B2:D10,MATCH(\\\"Widget\\\",A2:A10,0),MATCH(\\\"Jan\\\",B1:D1,0))\",\"explanation\":\"2D lookup using INDEX MATCH.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "filter-dynamic-array",
+    "title": "FILTER spilled array",
+    "userPrompt": "Filter sales table A:C for amounts >1000, return region and amount columns.",
+    "expectedAnswer": "Use dynamic array FILTER; the result will spill into adjacent cells.",
+    "expectedFormula": "=FILTER(B:C, C:C>1000)",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "FILTER",
+      "spill"
+    ],
+    "difficulty": "medium",
+    "tags": [
+      "dynamic arrays"
+    ],
+    "mockResponse": "{\"formula\":\"=FILTER(B:C,C:C>1000)\",\"explanation\":\"Filters regions and amounts over 1000, spills results.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "countifs-date-range",
+    "title": "COUNTIFS date range",
+    "userPrompt": "Count rows where date in A is between 2024-01-01 and 2024-03-31, status in B is 'Paid'.",
+    "expectedAnswer": "COUNTIFS with date range.",
+    "expectedFormula": "=COUNTIFS(A:A,\">=2024-01-01\",A:A,\"<=2024-03-31\",B:B,\"Paid\")",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "COUNTIFS",
+      "date range"
+    ],
+    "difficulty": "easy",
+    "tags": [
+      "aggregation"
+    ],
+    "mockResponse": "{\"formula\":\"=COUNTIFS(A:A,\\\">=2024-01-01\\\",A:A,\\\"<=2024-03-31\\\",B:B,\\\"Paid\\\")\",\"explanation\":\"Counts paid items in Q1 2024.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "let-named-expression",
+    "title": "LET for reusable calculation",
+    "userPrompt": "Calculate average sales per region using LET to avoid repeating SUMIFS.",
+    "expectedAnswer": "LET for intermediate calculations.",
+    "expectedFormula": "=LET(north,SUMIFS(C:C,B:B,\"North\"),south,SUMIFS(C:C,B:B,\"South\"),(north+south)/2)",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "LET"
+    ],
+    "difficulty": "hard",
+    "tags": [
+      "performance"
+    ],
+    "mockResponse": "{\"formula\":\"=LET(north,SUMIFS(C:C,B:B,\\\"North\\\"),south,SUMIFS(C:C,B:B,\\\"South\\\"),(north+south)/2)\",\"explanation\":\"Reuses named expressions for cleaner formula.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "textsplit-delimited",
+    "title": "TEXTSPLIT on pipe-delimited data",
+    "userPrompt": "Column A has 'Product|Qty|Price', split into B:D in row 1.",
+    "expectedAnswer": "TEXTSPLIT dynamic split.",
+    "expectedFormula": "=TEXTSPLIT(A1,\"|\")",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "TEXTSPLIT"
+    ],
+    "difficulty": "easy",
+    "tags": [
+      "text"
+    ],
+    "mockResponse": "{\"formula\":\"=TEXTSPLIT(A1,\\\"|\\\")\",\"explanation\":\"Splits pipe-delimited text into columns.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "date-text-parse",
+    "title": "Parse text dates to proper dates",
+    "userPrompt": "Column A has '01/15/2024' as text, convert to date in B.",
+    "expectedAnswer": "Use DATEVALUE for date parsing from text to a proper Excel date.",
+    "expectedFormula": "=DATEVALUE(A1)",
+    "acceptableAlternatives": [
+      "=DATE(RIGHT(A1,4),LEFT(A1,2),MID(A1,4,2))"
+    ],
+    "requiredConcepts": [
+      "DATEVALUE"
+    ],
+    "difficulty": "easy",
+    "tags": [
+      "dates"
+    ],
+    "mockResponse": "{\"formula\":\"=DATEVALUE(A1)\",\"explanation\":\"Converts text date to Excel date value.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "absolute-ref-mistake",
+    "title": "Fix absolute reference error",
+    "userPrompt": "Formula =A$1*B1 copied down changes wrong. Why and how to fix for column totals?",
+    "expectedAnswer": "Use absolute references with $ syntax to control whether rows, columns, or both stay fixed.",
+    "expectedFormula": "=A$1*B1 for row copy, =$A1*B1 for column copy, =$A$1*$B1 for fixed.",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "absolute references",
+      "$ syntax"
+    ],
+    "difficulty": "medium",
+    "tags": [
+      "debugging"
+    ],
+    "mockResponse": "{\"formula\":\"=A$1*B1 for row copy, =$A1*B1 for column copy, =$A$1*$B1 for fixed.\",\"explanation\":\"Use $ to lock row or column when copying. A$1 locks row, $A1 locks column.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "iferror-propagation",
+    "title": "Handle #N/A in lookup chain",
+    "userPrompt": "XLOOKUP returns #N/A, but next formula needs 0 instead. Wrap without hiding real errors.",
+    "expectedAnswer": "IFERROR selective handling.",
+    "expectedFormula": "=IFERROR(XLOOKUP(...),0)",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "IFERROR"
+    ],
+    "difficulty": "medium",
+    "tags": [
+      "error handling"
+    ],
+    "mockResponse": "{\"formula\":\"=IFERROR(XLOOKUP(...),0)\",\"explanation\":\"Returns 0 for #N/A but propagates other errors.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "latest-invoice-per-customer",
+    "title": "Latest invoice per customer",
+    "userPrompt": "Table A:Date, B:Customer, C:Invoice#. Find latest invoice# for each customer.",
+    "expectedAnswer": "Task to formula: MAXIFS or FILTER.",
+    "expectedFormula": "=MAXIFS(C:C,B:B,B2)",
+    "acceptableAlternatives": [
+      "=MAX(FILTER(C:C,(B:B=B2)*(A:A=MAXIFS(A:A,B:B,B2))))"
+    ],
+    "requiredConcepts": [
+      "MAXIFS"
+    ],
+    "difficulty": "hard",
+    "tags": [
+      "task"
+    ],
+    "mockResponse": "{\"formula\":\"=MAXIFS(C:C,B:B,B2)\",\"explanation\":\"Latest invoice by max date per customer.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "vlookup-limitations",
+    "title": "When not to use VLOOKUP",
+    "userPrompt": "Why avoid VLOOKUP? When to use XLOOKUP instead?",
+    "expectedAnswer": "VLOOKUP limitations include one-way lookup direction and fragile column indexes; XLOOKUP advantages include exact-match defaults, left/right lookup, and cleaner return arrays.",
+    "expectedFormula": "",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "VLOOKUP limitations",
+      "XLOOKUP advantages"
+    ],
+    "difficulty": "easy",
+    "tags": [
+      "explanation"
+    ],
+    "mockResponse": "{\"explanation\":\"VLOOKUP: left-to-right only, approximate match default, column index fragile. Use XLOOKUP: bidirectional, exact default, return array.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "spill-range-ref",
+    "title": "Reference spilled array range",
+    "userPrompt": "FILTER in D1 spills to D1:D10. Sum the spilled range in E1.",
+    "expectedAnswer": "Use the spill reference operator # to refer to the full spilled range.",
+    "expectedFormula": "=SUM(D1#)",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "spill reference",
+      "#"
+    ],
+    "difficulty": "medium",
+    "tags": [
+      "dynamic arrays"
+    ],
+    "mockResponse": "{\"formula\":\"=SUM(D1#)\",\"explanation\":\"# references entire spilled array dynamically.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "unique-customers-sales",
+    "title": "Unique customers total sales",
+    "userPrompt": "Sum total sales per unique customer from A:Customer, B:Sale.",
+    "expectedAnswer": "SUMPRODUCT with UNIQUE.",
+    "expectedFormula": "=SUMPRODUCT(UNIQUE(A:A), SUMIF(A:A,UNIQUE(A:A),B:B))",
+    "acceptableAlternatives": [
+      "=SUMPRODUCT(SUMIFS(B:B,A:A,UNIQUE(A:A)),UNIQUE(A:A))"
+    ],
+    "requiredConcepts": [
+      "UNIQUE",
+      "SUMPRODUCT"
+    ],
+    "difficulty": "hard",
+    "tags": [
+      "aggregation"
+    ],
+    "mockResponse": "{\"formula\":\"=SUMPRODUCT(UNIQUE(A:A),SUMIF(A:A,UNIQUE(A:A),B:B))\",\"explanation\":\"Totals sales per unique customer.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "text-numbers-sum",
+    "title": "Sum column with text-formatted numbers",
+    "userPrompt": "Column A looks like numbers but SUM(A:A) is 0. Fix the formula.",
+    "expectedAnswer": "Use VALUE for text to number conversion before summing.",
+    "expectedFormula": "=SUM(VALUE(A:A))",
+    "acceptableAlternatives": [
+      "=SUMPRODUCT(VALUE(A:A))"
+    ],
+    "requiredConcepts": [
+      "VALUE"
+    ],
+    "difficulty": "easy",
+    "tags": [
+      "debugging"
+    ],
+    "mockResponse": "{\"formula\":\"=SUM(VALUE(A:A))\",\"explanation\":\"VALUE converts text numbers to values for summing.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "sortby-custom",
+    "title": "SORTBY with custom order",
+    "userPrompt": "Sort A:C by priority column D where 'High'>'Medium'>'Low'.",
+    "expectedAnswer": "Use SORTBY with MATCH to implement a custom sort order.",
+    "expectedFormula": "=SORTBY(A:C, MATCH(D:D,{\"High\";\"Medium\";\"Low\"},0))",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "SORTBY",
+      "custom sort"
+    ],
+    "difficulty": "hard",
+    "tags": [
+      "dynamic arrays"
+    ],
+    "mockResponse": "{\"formula\":\"=SORTBY(A:C,MATCH(D:D,{\\\"High\\\";\\\"Medium\\\";\\\"Low\\\"},0))\",\"explanation\":\"Custom priority sort using MATCH.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "broken-range-copy",
+    "title": "Formula breaks when copied across columns",
+    "userPrompt": "Formula =SUM(A1:A10) copied to B1 becomes SUM(A1:A10). Why and fix?",
+    "expectedAnswer": "Use relative ranges carefully; lock the column with $ so the copied formula keeps the intended range.",
+    "expectedFormula": "=SUM($A1:$A10)",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "relative ranges"
+    ],
+    "difficulty": "easy",
+    "tags": [
+      "debugging"
+    ],
+    "mockResponse": "{\"formula\":\"=SUM($A1:$A10)\",\"explanation\":\"Ranges adjust relatively when copied. Use $A1:$A10 to lock column.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "lambda-recursive",
+    "title": "LAMBDA for running total",
+    "userPrompt": "Create running total in B1 using LAMBDA (Excel 365).",
+    "expectedAnswer": "Recursive LAMBDA.",
+    "expectedFormula": "=LAMBDA(x,IF(x=\"\",SUM($B$1:B1),SUM($B$1:B1)))(A2)",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "LAMBDA"
+    ],
+    "difficulty": "hard",
+    "tags": [
+      "advanced"
+    ],
+    "mockResponse": "{\"formula\":\"=LAMBDA(x,IF(x=\\\"\\\",SUM($B$1:B1),SUM($B$1:B1)))(A2)\",\"explanation\":\"SCAN or recursive LAMBDA for running totals.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "choose-cols",
+    "title": "Dynamic column selection",
+    "userPrompt": "Return column 2 if month=1, column 3 if month=2 from A1:F10.",
+    "expectedAnswer": "Use CHOOSE with INDEX for dynamic columns selected by month.",
+    "expectedFormula": "=INDEX(A1:F10,,CHOOSE(MONTH(TODAY()),2,3))",
+    "acceptableAlternatives": [
+      "=CHOOSE(MONTH(TODAY()),INDEX(A1:F10,,2),INDEX(A1:F10,,3))"
+    ],
+    "requiredConcepts": [
+      "CHOOSE",
+      "dynamic columns"
+    ],
+    "difficulty": "medium",
+    "tags": [
+      "dynamic"
+    ],
+    "mockResponse": "{\"formula\":\"=INDEX(A1:F10,,CHOOSE(MONTH(TODAY()),2,3))\",\"explanation\":\"Dynamic column by month using CHOOSE.\",\"confidence\":0.9}"
+  },
+  {
+    "id": "sequence-fill",
+    "title": "Generate sequence 1 to 100 in A1",
+    "userPrompt": "Fill column A with numbers 1-100 starting A1.",
+    "expectedAnswer": "SEQUENCE.",
+    "expectedFormula": "=SEQUENCE(100)",
+    "acceptableAlternatives": [],
+    "requiredConcepts": [
+      "SEQUENCE"
+    ],
+    "difficulty": "easy",
+    "tags": [
+      "dynamic arrays"
+    ],
+    "mockResponse": "{\"formula\":\"=SEQUENCE(100)\",\"explanation\":\"Generates vertical array 1 to 100.\",\"confidence\":0.9}"
+  }
+]

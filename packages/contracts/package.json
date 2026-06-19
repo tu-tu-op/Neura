@@ -1,0 +1,20 @@
+{
+  "name": "@dataloop/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy:artifact-registry:legacy-evm": "hardhat run scripts/deploy-artifact-registry.ts --network legacyEvm",
+    "deploy:legacy-evm": "hardhat run scripts/deploy.ts --network legacyEvm",
+    "register:bootstrap-artifact:legacy-evm": "hardhat run scripts/register-bootstrap-artifact.ts --network legacyEvm",
+    "test": "hardhat test",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^22.10.1",
+    "dotenv": "^16.4.7",
+    "hardhat": "^2.22.17",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "dataloop",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "npm@10.8.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "dev:agent": "npm run dev --workspace @dataloop/agent",
+    "agent:run": "npm run run --workspace @dataloop/agent",
+    "dev:api": "npm run dev --workspace @dataloop/api",
+    "dev:web": "npm run dev --workspace @dataloop/web",
+    "seed:week1": "npm run seed:week1 --workspace @dataloop/api",
+    "db:generate": "npm run db:generate --workspace @dataloop/storage",
+    "contracts:compile": "npm run compile --workspace @dataloop/contracts"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  }
+}

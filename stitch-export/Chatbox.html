@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zap AI - Excel Agent Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#958ea0",
+                        "surface-container-high": "#2a2a2c",
+                        "surface-bright": "#39393b",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "on-tertiary-container": "#4d0059",
+                        "surface-variant": "#353437",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-secondary-fixed": "#07006c",
+                        "secondary-container": "#3131c0",
+                        "on-primary-fixed-variant": "#5516be",
+                        "on-primary-container": "#340080",
+                        "on-background": "#e5e1e4",
+                        "on-error-container": "#ffdad6",
+                        "primary": "#d0bcff",
+                        "on-secondary": "#1000a9",
+                        "error-container": "#93000a",
+                        "on-secondary-container": "#b0b2ff",
+                        "on-surface-variant": "#cbc3d7",
+                        "primary-fixed": "#e9ddff",
+                        "tertiary-fixed-dim": "#fbabff",
+                        "surface-container-lowest": "#0e0e10",
+                        "surface-container-highest": "#353437",
+                        "surface-tint": "#d0bcff",
+                        "surface": "#131315",
+                        "on-error": "#690005",
+                        "tertiary-container": "#e14ef6",
+                        "tertiary-fixed": "#ffd6fd",
+                        "on-tertiary-fixed-variant": "#7c008e",
+                        "on-primary-fixed": "#23005c",
+                        "outline-variant": "#494454",
+                        "primary-container": "#a078ff",
+                        "inverse-on-surface": "#313032",
+                        "background": "#131315",
+                        "on-tertiary": "#580065",
+                        "inverse-surface": "#e5e1e4",
+                        "secondary": "#c0c1ff",
+                        "surface-container-low": "#1c1b1d",
+                        "surface-dim": "#131315",
+                        "secondary-fixed": "#e1e0ff",
+                        "surface-container": "#201f22",
+                        "tertiary": "#fbabff",
+                        "inverse-primary": "#6d3bd7",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed": "#36003e",
+                        "primary-fixed-dim": "#d0bcff",
+                        "on-surface": "#e5e1e4",
+                        "on-primary": "#3c0091"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "1.5rem",
+                        "container-max": "800px",
+                        "sm": "1rem",
+                        "gutter": "1.5rem",
+                        "unit": "4px",
+                        "lg": "2.5rem",
+                        "xl": "4rem",
+                        "xs": "0.5rem"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Geist"],
+                        "label-caps": ["Geist"],
+                        "body-sm": ["Geist"],
+                        "body-base": ["Geist"],
+                        "headline-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.4", "letterSpacing": "-0.02em", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400" }],
+                        "headline-lg": ["42px", { "lineHeight": "1.2", "letterSpacing": "-0.04em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-image: radial-gradient(circle at 50% 0%, rgba(52, 0, 128, 0.15) 0%, transparent 60%);
+            background-color: #131315;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="text-on-background font-body-base min-h-screen flex flex-col relative overflow-x-hidden antialiased">
+<!-- TopNavBar (Generated from JSON) -->
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-sm py-xl w-full max-w-container-max mx-auto relative z-10">
+<!-- API Status Banner (Subtle) -->
+<!-- Hero Typography -->
+<div class="text-center mb-xl">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs tracking-tight">Ask Excel Agent</h1>
+<p class="font-body-base text-body-base text-on-surface-variant opacity-70">Type a command or ask a question</p>
+</div>
+<!-- Chat Input Container (The Core Interface) -->
+<div class="w-full bg-surface-container-low/40 backdrop-blur-md rounded-xl border border-outline-variant/20 p-sm shadow-2xl flex flex-col gap-sm transition-all focus-within:border-primary/30 focus-within:bg-surface-container-low/60 focus-within:shadow-[0_0_40px_rgba(208,188,255,0.05)]">
+<!-- Context / Question Area -->
+<div class="relative w-full">
+<textarea class="w-full bg-transparent border-none text-on-surface font-body-base text-body-base placeholder-on-surface-variant/40 resize-none focus:ring-0 p-2 min-h-[80px]" placeholder="Ask zap a question...">In a sales table with dates in A, regions in B, amounts in C, what formula sums sales in 'North' region after 2024-01-01?</textarea>
+</div>
+<!-- Toolbar & Actions -->
+<div class="flex items-center justify-between pt-sm border-t border-outline-variant/10">
+<!-- Left Actions (Hidden Complexity: Menu, Attach) -->
+<div class="flex items-center gap-2">
+<button class="p-xs text-on-surface-variant/60 hover:text-on-surface hover:bg-surface-bright/20 rounded-md transition-colors" title="Attach file">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">attach_file</span>
+</button>
+<!-- Quick Commands Menu (Hidden Complexity) -->
+<div class="relative group">
+<button class="p-xs text-on-surface-variant/60 hover:text-on-surface hover:bg-surface-bright/20 rounded-md transition-colors flex items-center gap-1" title="Commands">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">add</span>
+</button>
+<!-- Dropdown Content (Simulated visual for design structure) -->
+<div class="absolute bottom-full left-0 mb-2 w-48 bg-surface-container border border-outline-variant/20 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 flex flex-col py-1">
+<button class="text-left px-3 py-2 font-body-sm text-body-sm text-on-surface hover:bg-surface-bright/30 transition-colors">SUMIFS with multiple criteria</button>
+<button class="text-left px-3 py-2 font-body-sm text-body-sm text-on-surface hover:bg-surface-bright/30 transition-colors">Basic XLOOKUP lookup</button>
+<button class="text-left px-3 py-2 font-body-sm text-body-sm text-on-surface hover:bg-surface-bright/30 transition-colors">FILTER spilled array</button>
+<button class="text-left px-3 py-2 font-body-sm text-body-sm text-on-surface hover:bg-surface-bright/30 transition-colors">Fix absolute reference error</button>
+</div>
+</div>
+</div>
+<!-- Right Actions (Mode & Submit) -->
+<div class="flex items-center gap-sm">
+<!-- Mode Selector (Segmented Control style) -->
+<div class="flex bg-surface-container-highest/50 rounded-lg p-1 border border-outline-variant/10">
+<button class="px-3 py-1 font-body-sm text-body-sm rounded-md text-on-surface-variant/60 hover:text-on-surface transition-colors">Raw LLM</button>
+<button class="px-3 py-1 font-body-sm text-body-sm rounded-md bg-surface-bright/40 text-on-surface shadow-sm border border-outline-variant/20 transition-colors">With Artifacts</button>
+</div>
+<!-- Primary Actions -->
+<button class="px-4 py-1.5 rounded-lg bg-surface-bright/30 text-on-surface font-body-sm text-body-sm border border-outline-variant/20 hover:bg-surface-bright/50 transition-colors">
+                        Run Comparison
+                    </button>
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-primary/10 text-primary font-body-sm text-body-sm border border-primary/20 hover:bg-primary/20 transition-colors font-medium">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">send</span>
+                        Send
+                    </button>
+</div>
+</div>
+</div><div class="mt-4 flex items-center justify-center gap-2 px-3 py-1 rounded-full bg-surface-container/50 border border-outline-variant/20 backdrop-blur-sm">
+<div class="w-2 h-2 rounded-full bg-error-container"></div>
+<span class="font-body-sm text-body-sm text-on-surface-variant/70">Agent API unavailable; using local demo state. Failed to fetch</span>
+</div>
+<!-- History Toggle / Mini Sidebar Hint -->
+<div class="fixed top-1/2 left-0 -translate-y-1/2 w-1 h-16 bg-outline-variant/20 hover:bg-primary/50 hover:w-2 transition-all duration-300 rounded-r-md cursor-pointer flex items-center justify-center group z-50">
+<span class="material-symbols-outlined text-[16px] text-primary opacity-0 group-hover:opacity-100 absolute left-2" style="font-variation-settings: 'FILL' 0;">history</span>
+</div>
+</main>
+</body></html>
