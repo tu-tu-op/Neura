@@ -159,19 +159,22 @@ export async function compareAgentQuestion(question: string) {
   });
 }
 
-export interface PlatformAgent { id: string; name: string; instructions: string; model: string; status: "DRAFT" | "ACTIVE" | "ARCHIVED"; enabledTools: string[]; maxSteps: number }
+export interface PlatformAgent { id: string; name: string; instructions: string; model: string; status: "DRAFT" | "ACTIVE" | "ARCHIVED"; enabledTools: string[]; maxSteps: number; artifacts?: Array<{ artifactId: string }> }
 export interface PlatformRun { id: string; status: "RUNNING" | "COMPLETED" | "FAILED"; input: string; output: string | null; error: string | null; steps: Array<{ id: string; kind: string; toolName: string | null; input: unknown; output: unknown; error: string | null; durationMs: number | null }>; citations: Array<{ title: string; url: string; snippet: string }> }
+export interface PlatformArtifactVersion { id: string; version: number; status: "DRAFT" | "PUBLISHING" | "PUBLISHED" | "ARCHIVED"; content: string; contentHash: string; metadata: Record<string, unknown> | null; suiObjectId: string | null; transactionDigest: string | null; publishedAt: string | null; createdAt: string }
+export interface PlatformArtifact { id: string; title: string; domain: string; description: string | null; createdAt: string; updatedAt: string; versions: PlatformArtifactVersion[] }
 
 export function createPlatformAgent(payload: { name: string; instructions: string; model?: string; enabledTools: string[]; artifactIds: string[]; maxSteps: number }) {
   return request<PlatformAgent>("/v1/agents", { method: "POST", body: JSON.stringify(payload) });
 }
-export function updatePlatformAgent(id: string, payload: Partial<PlatformAgent>) {
+export function listPlatformAgents() { return request<PlatformAgent[]>("/v1/agents"); }
+export function updatePlatformAgent(id: string, payload: Partial<PlatformAgent> & { artifactIds?: string[] }) {
   return request<PlatformAgent>(`/v1/agents/${id}`, { method: "PATCH", body: JSON.stringify(payload) });
 }
 export function runPlatformAgent(id: string, input: string) {
   return request<PlatformRun>(`/v1/agents/${id}/runs`, { method: "POST", body: JSON.stringify({ input }) });
 }
-export function listPlatformArtifacts() { return request<Array<{ id: string; title: string; domain: string; versions: Array<{ status: string }> }>>("/v1/artifacts"); }
+export function listPlatformArtifacts() { return request<PlatformArtifact[]>("/v1/artifacts"); }
 export function submitRunFeedback(runId: string, rating: -1 | 0 | 1, correctedAnswer?: string) {
   return request(`/v1/runs/${runId}/feedback`, { method: "POST", body: JSON.stringify({ rating, correctedAnswer }) });
 }

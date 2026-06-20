@@ -18,13 +18,18 @@ import {
   compareAgentQuestion,
   getAgentLibrary,
   getAgentMarketplaceArtifacts,
+  listPlatformAgents,
+  listPlatformArtifacts,
   removeAgentArtifactFromLibrary,
+  updatePlatformAgent,
   uploadAgentArtifact,
   type AgentAnswerResource,
   type AgentArtifactResource,
   type AgentArtifactStorageProof,
   type AgentComparisonResult,
-  type AgentProviderStatus
+  type AgentProviderStatus,
+  type PlatformAgent,
+  type PlatformArtifact
 } from "../lib/api";
 import { sha256Bytes, useCreateArtifact } from "../lib/sui/artifacts";
 import type { SuiNetwork } from "../lib/sui/network-config";
@@ -344,6 +349,9 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
   const [selectedMarketplaceArtifactId, setSelectedMarketplaceArtifactId] = useState(DEFAULT_AGENT_ARTIFACT_ID);
   const [libraryIds, setLibraryIds] = useState<string[]>(() => normalizeLibraryIds(readStoredIds(AGENT_LIBRARY_KEY)));
   const [uploadedArtifacts, setUploadedArtifacts] = useState<DemoArtifact[]>(readStoredArtifacts);
+  const [groundingArtifacts, setGroundingArtifacts] = useState<PlatformArtifact[]>([]);
+  const [platformAgents, setPlatformAgents] = useState<PlatformAgent[]>([]);
+  const [selectedGroundingAgentId, setSelectedGroundingAgentId] = useState("");
   const [agentChatHistory, setAgentChatHistory] = useState<AgentChatTurn[]>([]);
   const [lastAgentArtifactSelection, setLastAgentArtifactSelection] = useState<string[]>([]);
   const [uploadArtifactForm, setUploadArtifactForm] = useState<UploadArtifactFormState>(() =>
@@ -368,9 +376,11 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
       setIsLoadingAgentWorkspace(true);
 
       try {
-        const [marketplaceResult, libraryResult] = await Promise.all([
+        const [marketplaceResult, libraryResult, persistentArtifacts, persistentAgents] = await Promise.all([
           getAgentMarketplaceArtifacts(),
-          getAgentLibrary()
+          getAgentLibrary(),
+          listPlatformArtifacts(),
+          listPlatformAgents()
         ]);
 
         if (!isMounted) {
@@ -386,6 +396,9 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
           mergeDemoArtifacts(nextUploadedArtifacts, current).filter((artifact) => artifact.source === "upload")
         );
         setLibraryIds(normalizeLibraryIds(nextLibraryArtifacts.map((artifact) => artifact.id)));
+        setGroundingArtifacts(persistentArtifacts);
+        setPlatformAgents(persistentAgents);
+        setSelectedGroundingAgentId((current) => current || persistentAgents[0]?.id || "");
       } catch (error) {
         if (isMounted) {
           setAgentNotice({
@@ -443,6 +456,34 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
 
   function handleWorkspaceChange(workspace: WorkspaceKey) {
     setActiveWorkspace(workspace);
+  }
+
+  async function assignGroundingArtifact(artifact: PlatformArtifact) {
+    const agent = platformAgents.find((candidate) => candidate.id === selectedGroundingAgentId);
+    if (!agent) {
+      setAgentNotice({ tone: "error", message: "Select an agent before using this artifact." });
+      return;
+    }
+    const artifactIds = [...new Set([...(agent.artifacts ?? []).map((item) => item.artifactId), artifact.id])];
+    try {
+      const updated = await updatePlatformAgent(agent.id, { artifactIds });
+      setPlatformAgents((current) => current.map((candidate) => candidate.id === updated.id ? updated : candidate));
+      setAgentNotice({ tone: "success", message: `${artifact.title} is assigned to ${agent.name}.` });
+    } catch (error) {
+      setAgentNotice({ tone: "error", message: formatError(error) });
+    }
+  }
+
+  function downloadGroundingArtifact(artifact: PlatformArtifact) {
+    const version = artifact.versions[0];
+    if (!version) return;
+    const fileName = typeof version.metadata?.fileName === "string" ? version.metadata.fileName : `${artifact.domain}.md`;
+    const url = URL.createObjectURL(new Blob([version.content], { type: "text/markdown;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 
   async function addArtifactToLibrary(artifactId: string) {
@@ -744,11 +785,12 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
         }
       >
         {agentNotice ? <StatusNotice tone={agentNotice.tone} message={agentNotice.message} /> : null}
-        {libraryArtifacts.length === 0 ? (
+        {libraryArtifacts.length === 0 && groundingArtifacts.length === 0 ? (
           <EmptyState message="No artifact files are available in this library." />
         ) : (
-          <div className="artifact-library-grid">
-            {libraryArtifacts.map((artifact) => (
+          <div className="stack">
+            {libraryArtifacts.length > 0 ? <div className="artifact-library-grid">
+              {libraryArtifacts.map((artifact) => (
               <div className="record-card artifact-library-card" key={artifact.id}>
                 <RecordHeader title={artifactFileName(artifact)} subtitle={artifact.title} />
                 <ArtifactDetail artifact={artifact} compact />
@@ -761,7 +803,45 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
                   </button>
                 </div>
               </div>
-            ))}
+              ))}
+            </div> : null}
+            {groundingArtifacts.length > 0 ? (
+              <section className="stack">
+                <div>
+                  <span className="micro-label">Persistent grounding catalog</span>
+                  <h3>Agent knowledge artifacts</h3>
+                  <p className="section-copy">Assigned workspace drafts can ground your private agents immediately. Sui publication records the approved public version.</p>
+                </div>
+                {platformAgents.length > 0 ? (
+                  <Field label="Target agent" helper="Choose where Use Artifact should attach the grounding pack.">
+                    <select value={selectedGroundingAgentId} onChange={(event) => setSelectedGroundingAgentId(event.target.value)}>
+                      {platformAgents.filter((agent) => agent.status !== "ARCHIVED").map((agent) => <option value={agent.id} key={agent.id}>{agent.name}</option>)}
+                    </select>
+                  </Field>
+                ) : null}
+                <div className="artifact-library-grid">
+                  {groundingArtifacts.filter((artifact) => artifact.versions[0]?.status !== "ARCHIVED").map((artifact) => {
+                    const version = artifact.versions[0];
+                    const selectedAgent = platformAgents.find((agent) => agent.id === selectedGroundingAgentId);
+                    const isAssigned = selectedAgent?.artifacts?.some((item) => item.artifactId === artifact.id) ?? false;
+                    return (
+                      <article className="record-card artifact-library-card" key={artifact.id}>
+                        <RecordHeader title={persistentArtifactFileName(artifact)} subtitle={artifact.title} />
+                        <PersistentArtifactDetail artifact={artifact} compact />
+                        <div className="inline-actions">
+                          <button type="button" className="button button-primary" onClick={() => void assignGroundingArtifact(artifact)} disabled={!selectedGroundingAgentId || isAssigned}>
+                            {isAssigned ? `Assigned to ${selectedAgent?.name ?? "Agent"}` : "Use with Agent"}
+                          </button>
+                          <button type="button" className="button button-tertiary" onClick={() => downloadGroundingArtifact(artifact)}>
+                            Download .md
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
           </div>
         )}
       </Panel>
@@ -1367,6 +1447,45 @@ function ArtifactDetail({ artifact, compact = false }: { artifact: DemoArtifact;
   );
 }
 
+function PersistentArtifactDetail({ artifact, compact = false }: { artifact: PlatformArtifact; compact?: boolean }) {
+  const version = artifact.versions[0];
+  const content = version?.content ?? "";
+  const caseCount = typeof version?.metadata?.caseCount === "number"
+    ? String(version.metadata.caseCount)
+    : String((content.match(/^###\s+/gm) ?? []).length);
+  const formulaCount = artifact.domain === "excel" ? String((content.match(/^=.*$/gm) ?? []).length) : "Not applicable";
+
+  return (
+    <div className="artifact-detail">
+      <div className="detail-grid compact-grid">
+        <Detail label="File" value={persistentArtifactFileName(artifact)} mono />
+        <Detail label="Size" value={formatArtifactFileSize(content)} />
+        <Detail label="Version" value={`v${version?.version ?? 1}.0.0`} />
+        <Detail label="Status" value={version?.status ?? "DRAFT"} />
+        <Detail label="Domain" value={artifact.domain} />
+        <Detail label="Knowledge cases" value={caseCount} />
+        <Detail label="Formulas" value={formulaCount} />
+        <Detail label="Storage" value="Neon PostgreSQL + pgvector" />
+        {!compact ? <Detail label="Content hash" value={version?.contentHash ?? "Unavailable"} mono /> : null}
+        {!compact ? <Detail label="Created" value={new Date(version?.createdAt ?? artifact.createdAt).toLocaleString()} /> : null}
+        {version?.suiObjectId ? <Detail label="Sui Object" value={version.suiObjectId} mono /> : <Detail label="Sui" value="Awaiting publication" />}
+        {version?.transactionDigest && !compact ? <Detail label="Sui transaction" value={version.transactionDigest} mono /> : null}
+      </div>
+      <div className={`artifact-file-preview ${compact ? "artifact-file-preview-compact" : ""}`}>
+        <div className="artifact-file-bar">
+          <span className="artifact-file-icon"><FileText size={16} /></span>
+          <div>
+            <strong className="mono-text">{persistentArtifactFileName(artifact)}</strong>
+            <span>{version?.status === "PUBLISHED" ? "Published grounding artifact" : "Draft grounding artifact"}</span>
+          </div>
+          <span className={`library-badge ${version?.status === "PUBLISHED" ? "library-badge-on" : ""}`}>{version?.status ?? "DRAFT"}</span>
+        </div>
+        <pre className="artifact-file-body"><code>{content}</code></pre>
+      </div>
+    </div>
+  );
+}
+
 function AgentChatTranscript({ question, answer }: { question: string; answer: AgentAnswer }) {
   const formula = answer.formula.trim();
   const explanation = answer.explanation.trim() || "No explanation returned.";
@@ -1906,6 +2025,13 @@ function artifactFileName(artifact: DemoArtifact) {
   }
 
   return `${artifact.id}.artifact.md`;
+}
+
+function persistentArtifactFileName(artifact: PlatformArtifact) {
+  const configuredName = artifact.versions[0]?.metadata?.fileName;
+  return typeof configuredName === "string" && configuredName.trim().length > 0
+    ? configuredName
+    : `${artifact.domain}.v${artifact.versions[0]?.version ?? 1}.artifact.md`;
 }
 
 function formatArtifactFileSize(content: string) {

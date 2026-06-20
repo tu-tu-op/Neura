@@ -138,7 +138,7 @@ export class AgentRuntimeService {
   }
   private async searchArtifacts(agentId: string, query: string, limit: number) {
     const embedding = await this.embed(query); const vector = `[${embedding.join(",")}]`;
-    return db.$queryRawUnsafe(`SELECT a.id AS "artifactId", a.title, c.content, (1 - (c.embedding <=> $1::vector)) AS similarity FROM "ArtifactChunk" c JOIN "ArtifactVersion" v ON v.id=c."artifactVersionId" JOIN "KnowledgeArtifact" a ON a.id=v."artifactId" JOIN "AgentArtifact" aa ON aa."artifactId"=a.id WHERE aa."agentId"=$2 AND v.status='PUBLISHED' ORDER BY (0.7 * (1 - (c.embedding <=> $1::vector)) + 0.3 * ts_rank_cd(to_tsvector('english', c."searchText"), plainto_tsquery('english', $3))) DESC LIMIT $4`, vector, agentId, query, limit);
+    return db.$queryRawUnsafe(`SELECT a.id AS "artifactId", a.title, c.content, (1 - (c.embedding <=> $1::vector)) AS similarity FROM "ArtifactChunk" c JOIN "ArtifactVersion" v ON v.id=c."artifactVersionId" JOIN "KnowledgeArtifact" a ON a.id=v."artifactId" JOIN "AgentArtifact" aa ON aa."artifactId"=a.id WHERE aa."agentId"=$2 AND v.status IN ('PUBLISHED','DRAFT') ORDER BY (0.7 * (1 - (c.embedding <=> $1::vector)) + 0.3 * ts_rank_cd(to_tsvector('english', c."searchText"), plainto_tsquery('english', $3))) DESC LIMIT $4`, vector, agentId, query, limit);
   }
   private async embed(text: string): Promise<number[]> {
     if (!this.config.modelBaseUrl) return [];

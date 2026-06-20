@@ -22,7 +22,7 @@ export function AgentBuilderPage({ onBack }: { onBack: () => void }) {
       <label>Name<input value={name} onChange={(e) => setName(e.target.value)} style={{ display: "block", width: "100%", padding: 10 }} /></label>
       <label>Instructions<textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={6} style={{ display: "block", width: "100%", padding: 10 }} /></label>
       <fieldset><legend>Tools</legend>{["web_search", "artifact_search", "calculator", "current_time"].map((tool) => <label key={tool} style={{ marginRight: 18 }}><input type="checkbox" checked={tools.includes(tool)} onChange={() => toggle(tool, tools, setTools)} /> {tool}</label>)}</fieldset>
-      <fieldset><legend>Published artifacts</legend>{artifacts.filter((item) => item.versions.some((v) => v.status === "PUBLISHED")).map((item) => <label key={item.id} style={{ display: "block" }}><input type="checkbox" checked={artifactIds.includes(item.id)} onChange={() => toggle(item.id, artifactIds, setArtifactIds)} /> {item.title}</label>)}</fieldset>
+      <fieldset><legend>Workspace artifacts</legend>{artifacts.filter((item) => item.versions.some((v) => v.status !== "ARCHIVED")).map((item) => <label key={item.id} style={{ display: "block" }}><input type="checkbox" checked={artifactIds.includes(item.id)} onChange={() => toggle(item.id, artifactIds, setArtifactIds)} /> {item.title}</label>)}</fieldset>
       <label>Test prompt<textarea value={testInput} onChange={(e) => setTestInput(e.target.value)} rows={3} style={{ display: "block", width: "100%", padding: 10 }} /></label>
       <button disabled={busy} type="submit">{busy ? "Running…" : "Create and test"}</button>
     </form>
