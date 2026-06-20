@@ -27,6 +27,12 @@ export interface AgentRuntimeConfig {
   modelName: string;
   modelApiKey: string | null;
   requestTeeVerification: boolean;
+  embeddingModel: string;
+  embeddingDimensions: number;
+  tavilyApiKey: string | null;
+  suiPackageId: string | null;
+  suiRegistryId: string | null;
+  suiRpcUrl: string;
   storage: AgentStorageConfig;
 }
 
@@ -115,6 +121,12 @@ function parseStorageEpochs(value: string | undefined) {
   return epochs;
 }
 
+function parsePositiveInteger(value: string | undefined, fallback: number, name: string) {
+  const parsed = Number(value ?? fallback);
+  if (!Number.isInteger(parsed) || parsed <= 0) throw new Error(`${name} must be a positive integer`);
+  return parsed;
+}
+
 function parseWebOrigin(value: string | undefined) {
   const configuredOrigins = (value ?? "http://localhost:5173,http://127.0.0.1:5173")
     .split(",")
@@ -139,9 +151,9 @@ export function getApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     nodeEnv: parseNodeEnvironment(env.NODE_ENV),
     blockchain: {
       chainId: parseChainId(env.CHAIN_ID),
-      rpcUrl: requireEnv(env.CHAIN_RPC_URL, "CHAIN_RPC_URL"),
-      contractAddress: requireEnv(env.DATA_LOOP_CONTRACT_ADDRESS, "DATA_LOOP_CONTRACT_ADDRESS"),
-      signerPrivateKey: requireEnv(env.API_SIGNER_PRIVATE_KEY, "API_SIGNER_PRIVATE_KEY")
+      rpcUrl: env.CHAIN_RPC_URL ?? "http://127.0.0.1:8545",
+      contractAddress: env.DATA_LOOP_CONTRACT_ADDRESS ?? "0x0000000000000000000000000000000000000000",
+      signerPrivateKey: env.API_SIGNER_PRIVATE_KEY ?? ""
     },
     agent: {
       modelMode: agentModelMode,
@@ -149,6 +161,12 @@ export function getApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
       modelName: optionalEnv(env.API_AGENT_MODEL_NAME ?? env.AGENT_MODEL_NAME) ?? "qwen/qwen-2.5-7b-instruct",
       modelApiKey: optionalEnv(env.API_AGENT_MODEL_API_KEY ?? env.AGENT_MODEL_API_KEY),
       requestTeeVerification: parseBoolean(env.API_AGENT_VERIFY_TEE ?? env.AGENT_VERIFY_TEE),
+      embeddingModel: env.AGENT_EMBEDDING_MODEL ?? "text-embedding-3-small",
+      embeddingDimensions: parsePositiveInteger(env.AGENT_EMBEDDING_DIMENSIONS, 1536, "AGENT_EMBEDDING_DIMENSIONS"),
+      tavilyApiKey: optionalEnv(env.TAVILY_API_KEY),
+      suiPackageId: optionalEnv(env.SUI_PACKAGE_ID ?? env.NEXT_PUBLIC_SUI_PACKAGE_ID),
+      suiRegistryId: optionalEnv(env.ARTIFACT_REGISTRY_ID ?? env.NEXT_PUBLIC_ARTIFACT_REGISTRY_ID),
+      suiRpcUrl: env.SUI_RPC_URL ?? "https://fullnode.testnet.sui.io:443",
       storage: {
         enabled: storagePrivateKey !== null || publisherUrl !== null,
         network: storageNetwork,

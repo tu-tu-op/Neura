@@ -159,6 +159,23 @@ export async function compareAgentQuestion(question: string) {
   });
 }
 
+export interface PlatformAgent { id: string; name: string; instructions: string; model: string; status: "DRAFT" | "ACTIVE" | "ARCHIVED"; enabledTools: string[]; maxSteps: number }
+export interface PlatformRun { id: string; status: "RUNNING" | "COMPLETED" | "FAILED"; input: string; output: string | null; error: string | null; steps: Array<{ id: string; kind: string; toolName: string | null; input: unknown; output: unknown; error: string | null; durationMs: number | null }>; citations: Array<{ title: string; url: string; snippet: string }> }
+
+export function createPlatformAgent(payload: { name: string; instructions: string; model?: string; enabledTools: string[]; artifactIds: string[]; maxSteps: number }) {
+  return request<PlatformAgent>("/v1/agents", { method: "POST", body: JSON.stringify(payload) });
+}
+export function updatePlatformAgent(id: string, payload: Partial<PlatformAgent>) {
+  return request<PlatformAgent>(`/v1/agents/${id}`, { method: "PATCH", body: JSON.stringify(payload) });
+}
+export function runPlatformAgent(id: string, input: string) {
+  return request<PlatformRun>(`/v1/agents/${id}/runs`, { method: "POST", body: JSON.stringify({ input }) });
+}
+export function listPlatformArtifacts() { return request<Array<{ id: string; title: string; domain: string; versions: Array<{ status: string }> }>>("/v1/artifacts"); }
+export function submitRunFeedback(runId: string, rating: -1 | 0 | 1, correctedAnswer?: string) {
+  return request(`/v1/runs/${runId}/feedback`, { method: "POST", body: JSON.stringify({ rating, correctedAnswer }) });
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
     headers: {

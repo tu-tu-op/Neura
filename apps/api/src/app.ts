@@ -8,6 +8,8 @@ import type { ApiConfig } from "./config";
 import { registerAgentRoutes } from "./routes/agent";
 import { registerBasePlatformRoutes } from "./routes/base-platform";
 import { registerHealthRoutes } from "./routes/health";
+import { AgentRuntimeService } from "./agent/runtime";
+import { registerAgentPlatformRoutes } from "./routes/agents";
 
 export interface AppDependencies {
   platformService?: BasePlatformService;
@@ -23,12 +25,13 @@ export async function buildApp(config: ApiConfig, dependencies: AppDependencies 
     origin: config.webOrigin
   });
 
-  const platformService = dependencies.platformService ?? createBasePlatformService(config);
   const agentService = dependencies.agentService ?? createAgentService(config.agent);
 
   await registerHealthRoutes(app);
-  await registerBasePlatformRoutes(app, platformService);
+  const platformService = dependencies.platformService ?? (config.blockchain.signerPrivateKey ? createBasePlatformService(config) : null);
+  if (platformService) await registerBasePlatformRoutes(app, platformService);
   await registerAgentRoutes(app, agentService);
+  await registerAgentPlatformRoutes(app, new AgentRuntimeService(config.agent));
 
   app.setErrorHandler((error, _request, reply) => {
     if (typeof error === "object" && error !== null && "validation" in error) {

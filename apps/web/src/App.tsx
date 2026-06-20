@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LandingPage } from "./pages/LandingPage";
 import "./styles.css";
+import { AgentBuilderPage } from "./pages/AgentBuilderPage";
 
-type AppView = "landing" | "dashboard";
+type AppView = "landing" | "dashboard" | "builder";
 
 function getViewFromLocation(): AppView {
-  return window.location.pathname.startsWith("/app") ? "dashboard" : "landing";
+  return window.location.pathname.startsWith("/agents/new") ? "builder" : window.location.pathname.startsWith("/app") ? "dashboard" : "landing";
 }
 
 export default function App() {
@@ -38,8 +39,10 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  return view === "dashboard" ? (
-    <DashboardPage onBackToIntro={navigateToLanding} />
+  function navigateToBuilder() { window.history.pushState(null, "", "/agents/new"); setView("builder"); window.scrollTo({ top: 0 }); }
+
+  return view === "builder" ? <AgentBuilderPage onBack={navigateToDashboard} /> : view === "dashboard" ? (
+    <><DashboardPage onBackToIntro={navigateToLanding} /><button onClick={navigateToBuilder} style={{ position: "fixed", right: 24, bottom: 24, zIndex: 100, padding: "12px 18px", borderRadius: 999 }}>Create agent</button></>
   ) : (
     <LandingPage onLaunchApp={navigateToDashboard} />
   );

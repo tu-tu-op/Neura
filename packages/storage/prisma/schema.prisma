@@ -5,6 +5,147 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum AgentStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum AgentRunStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum ArtifactStatus {
+  DRAFT
+  PUBLISHING
+  PUBLISHED
+  ARCHIVED
+}
+
+model Agent {
+  id               String          @id @default(cuid())
+  name             String
+  instructions     String
+  model            String
+  status           AgentStatus     @default(DRAFT)
+  enabledTools     String[]
+  maxSteps         Int             @default(5)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  runs             AgentRun[]
+  artifacts        AgentArtifact[]
+}
+
+model AgentRun {
+  id          String         @id @default(cuid())
+  agentId     String
+  agent       Agent          @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  status      AgentRunStatus @default(RUNNING)
+  input       String
+  output      String?
+  error       String?
+  usage       Json?
+  startedAt   DateTime       @default(now())
+  completedAt DateTime?
+  steps       AgentRunStep[]
+  citations   RunCitation[]
+  feedback    RunFeedback[]
+
+  @@index([agentId, startedAt])
+}
+
+model AgentRunStep {
+  id         String   @id @default(cuid())
+  runId      String
+  run        AgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  position   Int
+  kind       String
+  toolName   String?
+  input      Json?
+  output     Json?
+  error      String?
+  durationMs Int?
+  createdAt  DateTime @default(now())
+
+  @@unique([runId, position])
+}
+
+model RunCitation {
+  id        String   @id @default(cuid())
+  runId     String
+  run       AgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  title     String
+  url       String
+  snippet   String
+  createdAt DateTime @default(now())
+
+  @@index([runId])
+}
+
+model RunFeedback {
+  id              String   @id @default(cuid())
+  runId           String
+  run             AgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  rating          Int
+  correctedAnswer String?
+  createdAt       DateTime @default(now())
+}
+
+model KnowledgeArtifact {
+  id          String            @id @default(cuid())
+  title       String
+  domain      String
+  description String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  versions    ArtifactVersion[]
+  agents      AgentArtifact[]
+}
+
+model ArtifactVersion {
+  id                String            @id @default(cuid())
+  artifactId        String
+  artifact          KnowledgeArtifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  version           Int
+  status            ArtifactStatus    @default(DRAFT)
+  content           String
+  contentHash       String
+  metadata          Json?
+  suiObjectId       String?
+  transactionDigest String?
+  publishedAt       DateTime?
+  createdAt         DateTime          @default(now())
+  chunks            ArtifactChunk[]
+
+  @@unique([artifactId, version])
+  @@index([artifactId, status])
+}
+
+model ArtifactChunk {
+  id                String            @id @default(cuid())
+  artifactVersionId String
+  artifactVersion   ArtifactVersion   @relation(fields: [artifactVersionId], references: [id], onDelete: Cascade)
+  position          Int
+  content           String
+  searchText        String
+  embedding         Unsupported("vector(1024)")?
+
+  @@unique([artifactVersionId, position])
+}
+
+model AgentArtifact {
+  agentId    String
+  artifactId String
+  agent      Agent             @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  artifact   KnowledgeArtifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  createdAt  DateTime          @default(now())
+
+  @@id([agentId, artifactId])
 }
 
 enum DatasetEntrySourceType {

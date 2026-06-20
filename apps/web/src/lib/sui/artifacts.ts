@@ -6,6 +6,7 @@ import { useNetworkVariable } from "./network-config";
 import { ARTIFACT_REGISTRY_ID, SUI_PACKAGE_ID } from "./package-config";
 
 export interface CreateArtifactInput {
+  artifactId?: string;
   metadataUri: string;
   metadataHash: Uint8Array;
   storageUri: string;
@@ -19,13 +20,18 @@ export function useCreateArtifact() {
   const transactionMutation = useSignAndExecuteTransaction();
 
   const createArtifact = useCallback(
-    async ({ metadataUri, metadataHash, storageUri, storageHash }: CreateArtifactInput) => {
+    async ({ artifactId, metadataUri, metadataHash, storageUri, storageHash }: CreateArtifactInput) => {
       if (!packageId || !ARTIFACT_REGISTRY_ID) {
         throw new Error("Sui package and artifact registry IDs must be configured before publishing.");
       }
 
       const transaction = new Transaction();
-      transaction.moveCall({
+      if (artifactId) {
+        transaction.moveCall({
+          target: `${packageId}::artifact_registry::create_neon_artifact`,
+          arguments: [transaction.pure.string(artifactId), transaction.pure.vector("u8", Array.from(metadataHash)), transaction.object(ARTIFACT_REGISTRY_ID)]
+        });
+      } else transaction.moveCall({
         target: `${packageId}::artifact_registry::create_artifact`,
         arguments: [
           transaction.pure.string(metadataUri),
