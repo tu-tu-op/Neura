@@ -1,0 +1,223 @@
+<!DOCTYPE html><html class="h-full" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Neura - Ask the Agent</title>
+<!-- Montserrat Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Montserrat', 'sans-serif'],
+          },
+          colors: {
+            'dark-bg': '#0a0a0a',
+            'glass-bg': 'rgba(255, 255, 255, 0.03)',
+            'glass-border': 'rgba(255, 255, 255, 0.08)',
+            'neura-purple': '#8b5cf6',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-glassmorphism">
+    /* High-density backdrop blur and subtle border for glass panels */
+    .glass-panel {
+      background: rgba(20, 20, 20, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    /* Technical Dot Grid Background */
+    .dot-grid {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+    /* Interactive Spotlight effect placeholder - updated via JS */
+    #spotlight {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      background: radial-gradient(circle 400px at var(--mouse-x) var(--mouse-y), rgba(139, 92, 246, 0.15), transparent 80%);
+      z-index: 1;
+    }
+    /* Custom Scrollbar for better aesthetics */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="bg-dark-bg text-gray-200 font-sans h-full overflow-hidden">
+<!-- BEGIN: Interactive Background -->
+<div id="spotlight" style="--mouse-x: 807px; --mouse-y: 64px;"></div>
+<div class="fixed inset-0 dot-grid opacity-30 pointer-events-none z-0"></div>
+<!-- END: Interactive Background -->
+<!-- BEGIN: SideNavBar (Floating Glassmorphism) -->
+
+<!-- END: SideNavBar -->
+<!-- BEGIN: Top Navigation Bar -->
+<header class="fixed top-0 left-0 right-0 h-20 flex items-center justify-between px-10 z-40">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full glass-card hover:bg-white/10 transition-colors">
+<svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="m15 18-6-6 6-6"></path></svg>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg glass-card">
+
+</button>
+<span class="text-lg font-bold tracking-tight">Neura</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3 px-4 py-2 rounded-full glass-panel text-xs">
+<span class="text-gray-500 uppercase font-semibold">Network</span>
+<span class="text-white font-medium flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-purple-500"></span> Sui Testnet
+        </span>
+</div>
+<div class="px-4 py-2 rounded-full glass-panel text-xs font-mono text-gray-400">
+        0x45554f...43be54
+      </div>
+<button class="px-6 py-2 rounded-full glass-panel text-sm font-semibold hover:bg-white/10 transition-colors">
+        Disconnect
+      </button>
+</div>
+</header>
+<!-- END: Top Navigation Bar -->
+<!-- BEGIN: Main Content Container -->
+<main class="relative z-10 pt-32 pr-20 pb-10 h-screen overflow-y-auto px-10">
+<div class="max-w-5xl mx-auto">
+<!-- BEGIN: Header Section -->
+<section class="flex justify-between items-start mb-12">
+<div data-purpose="title-block">
+<h1 class="text-4xl font-bold mb-3">Agent</h1>
+<p class="text-gray-400 text-sm">Ask a question and compare raw model output with artifact-grounded output.</p>
+</div>
+<div class="flex gap-4" data-purpose="status-cards">
+<!-- Session Status Card -->
+<div class="glass-panel rounded-xl p-4 min-w-[140px]">
+<p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Session</p>
+<p class="text-sm font-semibold">Connected</p>
+</div>
+<!-- Library Artifacts Card -->
+<div class="glass-panel rounded-xl p-4 min-w-[140px]">
+<p class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Library Artifacts</p>
+<p class="text-sm font-semibold">1</p>
+</div>
+</div>
+</section>
+<!-- END: Header Section -->
+<!-- BEGIN: Ask the Agent Console -->
+<section class="glass-panel rounded-3xl p-12 mb-10 border-white/5">
+<h2 class="text-3xl font-bold text-center mb-10">Ask the Agent</h2>
+<div class="max-w-3xl mx-auto" data-purpose="chat-interface">
+<!-- Text Input Area -->
+<div class="glass-card rounded-2xl p-6 border-white/10 focus-within:border-purple-500/50 transition-colors">
+<!-- Selected Artifact Tag -->
+<div class="flex items-center gap-2 mb-4">
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-200 text-[11px] font-medium border border-purple-500/30">
+                Excel artifact pack
+                <button class="hover:text-white"><svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+</div>
+</div>
+<!-- Prompt Text -->
+<div class="mb-8">
+<p class="text-sm leading-relaxed text-gray-300">
+                In a sales table with dates in A, regions in B, amounts in C, what formula sums sales in 'North' region after 2024-01-01?
+              </p>
+</div>
+<!-- Controls Row -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1 p-1 rounded-full bg-white/5" data-purpose="toggle-switch">
+<button class="px-5 py-2 text-xs font-medium text-gray-500 hover:text-gray-300 transition-colors">Raw LLM</button>
+<button class="px-5 py-2 text-xs font-medium bg-white/10 text-white rounded-full">With Artifacts</button>
+<button class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-white">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><line x1="12" x2="12" y1="5" y2="19"></line><line x1="5" x2="19" y1="12" y2="12"></line></svg>
+</button>
+</div>
+<button class="px-8 py-2.5 rounded-xl bg-purple-600/30 text-purple-200 text-sm font-semibold border border-purple-500/30 hover:bg-purple-600/40 transition-colors">
+                Send
+              </button>
+</div>
+</div>
+<!-- Suggested Prompt Cards -->
+<div class="grid grid-cols-2 gap-4 mt-8">
+<button class="glass-card p-4 rounded-xl text-left hover:bg-white/5 transition-colors border-white/5">
+<p class="text-xs font-medium text-gray-300">SUMIFS with multiple criteria</p>
+</button>
+<button class="glass-card p-4 rounded-xl text-left hover:bg-white/5 transition-colors border-white/5">
+<p class="text-xs font-medium text-gray-300">Basic XLOOKUP lookup</p>
+</button>
+<button class="glass-card p-4 rounded-xl text-left hover:bg-white/5 transition-colors border-white/5">
+<p class="text-xs font-medium text-gray-300">Sui stack overview</p>
+</button>
+<button class="glass-card p-4 rounded-xl text-left hover:bg-white/5 transition-colors border-white/5">
+<p class="text-xs font-medium text-gray-300">Sui object model and ownership</p>
+</button>
+</div>
+<!-- System Message -->
+<div class="mt-8 flex justify-center">
+<div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 border border-white/5 text-[10px] text-gray-400">
+<span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+              Agent API unavailable: using local demo state. Failed to fetch
+            </div>
+</div>
+</div>
+</section>
+<!-- END: Ask the Agent Console -->
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-10 right-10 px-6 py-3 rounded-full bg-gray-200 text-black font-bold text-xs shadow-2xl hover:scale-105 transition-transform z-50">
+      Create agent
+    </button>
+</main>
+<!-- END: Main Content Container -->
+<!-- BEGIN: Interaction Script -->
+<script data-purpose="event-handlers">
+    // Mouse tracking spotlight effect
+    const spotlight = document.getElementById('spotlight');
+    document.addEventListener('mousemove', (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      spotlight.style.setProperty('--mouse-x', `${x}px`);
+      spotlight.style.setProperty('--mouse-y', `${y}px`);
+    });
+
+    // Simple interaction for sidebar links
+    const navLinks = document.querySelectorAll('aside nav a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        navLinks.forEach(l => l.classList.remove('bg-white/5', 'text-white'));
+        navLinks.forEach(l => l.classList.add('text-gray-400'));
+        link.classList.remove('text-gray-400');
+        link.classList.add('bg-white/5', 'text-white');
+      });
+    });
+  </script>
+<!-- END: Interaction Script -->
+
+
+
+
+
+
+</body></html>
