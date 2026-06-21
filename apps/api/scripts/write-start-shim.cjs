@@ -5,4 +5,4 @@ const distDir = join(__dirname, "..", "dist");
 const shimPath = join(distDir, "index.js");
 
 mkdirSync(distDir, { recursive: true });
-writeFileSync(shimPath, 'require("./apps/api/src/index.js");\n', "utf8");
+writeFileSync(shimPath, 'module.exports = require("./apps/api/src/index.js");\n', "utf8");

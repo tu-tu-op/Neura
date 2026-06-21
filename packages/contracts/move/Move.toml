@@ -1,10 +1,9 @@
+﻿# Neura Move package
+# Verifier-compatible: no explicit Sui dep so both CLI and Welldone auto-add same framework
 [package]
 name = "neura"
 version = "0.1.0"
 edition = "2024.beta"
-
-[dependencies]
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
 
 [addresses]
 neura = "0x0"

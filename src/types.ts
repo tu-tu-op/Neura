@@ -15,6 +15,7 @@ export enum Screen {
   Connectors = "CONNECTORS",
   ScoutChat = "SCOUT_CHAT",
   Settings = "SETTINGS",
+  Marketplace = "MARKETPLACE",
 }
 
 export interface Connector {
@@ -42,4 +43,18 @@ export interface ChatMessage {
   content: string;
   timestamp?: string;
   templateType?: "progress" | "report" | "streak" | "none";
+}
+
+export interface MarketplaceArtifact {
+  id: string;
+  title: string;
+  domain: "excel" | "sui";
+  difficulty: "easy" | "medium" | "hard";
+  tags: string[];
+  concepts: string[];
+  usageCount: number;
+  benchmarkScore: number | null;
+  creator: string;
+  source: "marketplace" | "upload";
+  inLibrary?: boolean;
 }

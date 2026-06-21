@@ -15,6 +15,7 @@ import SetupTrackerScreen from "./components/SetupTrackerScreen";
 import ConnectorsScreen from "./components/ConnectorsScreen";
 import ScoutChatScreen from "./components/ScoutChatScreen";
 import SettingsScreen from "./components/SettingsScreen";
+import MarketplaceScreen from "./components/MarketplaceScreen";
 
 import { Screen, AgentThread } from "./types";
 import { INITIAL_THREADS } from "./data";
@@ -112,6 +113,8 @@ export default function App() {
             onSignOut={handleSignOut}
           />
         );
+      case Screen.Marketplace:
+        return <MarketplaceScreen onNavigate={setCurrentScreen} />;
       default:
         return <SplashScreen onComplete={() => setCurrentScreen(Screen.SignIn)} />;
     }

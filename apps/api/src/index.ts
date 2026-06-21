@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+import type { IncomingMessage, ServerResponse } from "node:http";
 
 import { config as loadEnv } from "dotenv";
 
@@ -8,9 +9,21 @@ import { getApiConfig } from "./config";
 loadEnv({ path: resolve(process.cwd(), ".env") });
 loadEnv({ path: resolve(process.cwd(), "../../.env") });
 
-async function start() {
+const appPromise = (async () => {
   const config = getApiConfig();
-  const app = await buildApp(config);
+  return buildApp(config);
+})();
+
+/** Vercel invokes this export once per HTTP request. */
+export default async function handler(request: IncomingMessage, response: ServerResponse) {
+  const app = await appPromise;
+  await app.ready();
+  app.server.emit("request", request, response);
+}
+
+async function start() {
+  const app = await appPromise;
+  const config = getApiConfig();
 
   try {
     await app.listen({
@@ -23,4 +36,8 @@ async function start() {
   }
 }
 
-void start();
+// A serverless runtime owns the socket. Calling listen() there causes the
+// function invocation to hang or crash.
+if (!process.env.VERCEL) {
+  void start();
+}

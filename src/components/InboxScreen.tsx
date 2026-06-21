@@ -1,4 +1,4 @@
-import { Mail, BarChart2, Users, Settings, Pin, Plus, Menu, Network } from "lucide-react";
+import { Mail, BarChart2, Users, Settings, Pin, Plus, Menu, Network, Store } from "lucide-react";
 import { Screen, AgentThread } from "../types";
 
 interface InboxScreenProps {
@@ -116,6 +116,12 @@ export default function InboxScreen({ threads, onNavigate, onSelectThread }: Inb
           className="flex flex-col items-center justify-center text-muted-ink p-3 hover:bg-surface-variant transition-all scale-95 duration-200 cursor-pointer"
         >
           <BarChart2 className="w-5 h-5 text-muted-ink" />
+        </button>
+        <button
+          onClick={() => onNavigate(Screen.Marketplace)}
+          className="flex flex-col items-center justify-center text-muted-ink p-3 hover:bg-surface-variant transition-all scale-95 duration-200 cursor-pointer"
+        >
+          <Store className="w-5 h-5 text-muted-ink" />
         </button>
         <button
           onClick={() => onNavigate(Screen.Connectors)}

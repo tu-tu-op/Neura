@@ -1067,7 +1067,7 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
 
   return (
     <>
-      <header className={`topbar ${activeWorkspace === "agent" ? "agent-page-topbar" : ""}`}>
+      <header className={`topbar ${activeWorkspace === "agent" ? "agent-page-topbar" : "artifact-page-topbar"}`}>
         <div className="topbar-inner">
           <div className="topbar-brand-area">
             <button className="back-button back-icon-button" type="button" onClick={onBackToIntro} aria-label="Back to introductory pages">
@@ -1133,7 +1133,7 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
         </div>
       </header>
 
-      <main className={`app-shell ${activeWorkspace === "agent" ? "agent-page-shell" : ""}`}>
+      <main className={`app-shell ${activeWorkspace === "agent" ? "agent-page-shell" : "artifact-page-shell"}`}>
         <section className="workspace-shell">
           <div className="workspace-heading">
             <div>
@@ -1146,7 +1146,7 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
             </div>
           </div>
 
-          <div className="workspace-content">
+          <div className={`workspace-content ${activeWorkspace === "artifacts" ? `artifact-workspace artifact-workspace-${activeArtifactSection}` : ""}`}>
             {activeWorkspace === "artifacts" ? (
               <>
                 <WorkspaceSectionNav

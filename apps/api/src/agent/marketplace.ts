@@ -21,6 +21,20 @@ export interface KnowledgeArtifactCase {
 export type ExcelArtifactCase = KnowledgeArtifactCase;
 export type SuiArtifactCase = KnowledgeArtifactCase;
 
+/** Lean summary type used by the frontend Marketplace screen. */
+export interface MarketplaceArtifactSummary {
+  id: string;
+  title: string;
+  domain: "excel" | "sui";
+  difficulty: "easy" | "medium" | "hard";
+  tags: string[];
+  concepts: string[];
+  usageCount: number;
+  benchmarkScore: number;
+  creator: string;
+  source: "marketplace" | "upload";
+}
+
 export const excelArtifactCases: ExcelArtifactCase[] = [
   {
     id: "sumifs-multi-condition",
