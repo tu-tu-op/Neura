@@ -37,7 +37,7 @@ export function WalletConnectButton({ onNotice }: WalletConnectButtonProps) {
   function connect(wallet: AvailableWallet) {
     onNotice({ tone: "neutral", message: `Opening ${wallet.name}...` });
     connectMutation.mutate(
-      { wallet },
+      { wallet, silent: false },
       {
         onSuccess: () => {
           setIsOpen(false);
@@ -53,7 +53,7 @@ export function WalletConnectButton({ onNotice }: WalletConnectButtonProps) {
     disconnectMutation.mutate(undefined, {
       onSuccess: () => {
         setIsOpen(false);
-        onNotice({ tone: "neutral", message: "Wallet disconnected." });
+        onNotice({ tone: "neutral", message: "Connect Wallet to Start" });
       },
       onError: (error) => onNotice({ tone: "error", message: formatWalletError(error) })
     });

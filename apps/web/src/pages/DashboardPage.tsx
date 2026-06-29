@@ -592,6 +592,12 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
 
   async function handleAgentQuestionSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!hasWalletConnection) {
+      setWalletNotice({ tone: "neutral", message: "Connect Wallet to Start" });
+      return;
+    }
+
     const trimmedQuestion = agentQuestion.trim();
 
     if (trimmedQuestion.length === 0) {
@@ -1033,7 +1039,12 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
               </button>
             </div>
             <div className="agent-run-actions">
-              <button className="zap-send-button" type="submit" disabled={isRunningAgent}>
+              <button
+                className="zap-send-button"
+                type="submit"
+                disabled={!hasWalletConnection || isRunningAgent}
+                title={!hasWalletConnection ? "Connect your wallet to send a question" : undefined}
+              >
                 <span>{isRunningAgent ? "Running..." : "Send"}</span>
               </button>
             </div>
@@ -1126,7 +1137,11 @@ export function DashboardPage({ onBackToIntro }: DashboardPageProps) {
 
             <span className="wallet-address-pill">{connectedStateLabel}</span>
 
-            {walletNotice ? <span className={`topbar-notice topbar-notice-${walletNotice.tone}`}>{walletNotice.message}</span> : null}
+            {walletNotice ? (
+              <span className={`topbar-notice topbar-notice-${walletNotice.tone}`}>{walletNotice.message}</span>
+            ) : activeWorkspace === "agent" && !hasWalletConnection ? (
+              <span className="topbar-notice topbar-notice-neutral">Connect Wallet to Start</span>
+            ) : null}
 
             <WalletConnectButton onNotice={setWalletNotice} />
           </div>

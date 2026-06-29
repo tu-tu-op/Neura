@@ -17,8 +17,8 @@ export function SuiProviders({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <SuiClientProvider networks={networkConfig} defaultNetwork={DEFAULT_NETWORK}>
-        {/* CHOSEN: dapp-kit 1.1.1 supports slushWallet, so Slush web is registered here once. */}
-        <WalletProvider autoConnect preferredWallets={["Slush"]} slushWallet={{ name: "Neura" }}>
+        {/* Keep wallet selection user-driven; reconnecting must go through the wallet picker. */}
+        <WalletProvider preferredWallets={["Slush"]} slushWallet={{ name: "Neura" }}>
           {children}
         </WalletProvider>
       </SuiClientProvider>
